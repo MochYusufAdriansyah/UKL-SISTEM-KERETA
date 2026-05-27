@@ -1,0 +1,1520 @@
+{
+  "info": {
+    "_postman_id": "4d43a115-c0fd-487b-9b59-7b3b2b40dd2a",
+    "name": "Tiket Kereta API",
+    "description": "Postman collection generated from the current NestJS codebase.\n\nImportant notes:\n- `POST /auth/register` always creates a `PENUMPANG` user.\n- Admin-only routes require a pre-existing admin user and a valid `adminToken`.\n- `pelanggan` and `petugas` records depend on existing `Users` rows.\n- Collection variables are populated automatically by the create/login requests where possible.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "penumpangUsername",
+      "value": "penumpang_demo",
+      "type": "string"
+    },
+    {
+      "key": "penumpangPassword",
+      "value": "StrongPassword123!",
+      "type": "string"
+    },
+    {
+      "key": "adminUsername",
+      "value": "admin",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "StrongPassword123!",
+      "type": "string"
+    },
+    {
+      "key": "penumpangToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "adminUserId",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "petugasUserId",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "pelangganId",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "petugasId",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "keretaId",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "gerbongId",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "kursiId",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "kursiId2",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "jadwalId",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "ticketId",
+      "value": "0",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Get Hello",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/"
+          }
+        },
+        {
+          "name": "Get OpenAPI JSON",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/docs-json"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Penumpang",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{penumpangUsername}}\",\n  \"password\": \"{{penumpangPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Request succeeded\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set('userId', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Penumpang",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{penumpangUsername}}\",\n  \"password\": \"{{penumpangPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login succeeded\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.token) pm.collectionVariables.set('penumpangToken', data.token);",
+                  "if (data && data.user && data.user.id !== undefined) pm.collectionVariables.set('userId', String(data.user.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Requires an existing admin account. Public registration does not create admin users."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login succeeded\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.token) pm.collectionVariables.set('adminToken', data.token);",
+                  "if (data && data.user && data.user.id !== undefined) pm.collectionVariables.set('adminUserId', String(data.user.id));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users (ADMIN)",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/findall",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/findone/{{userId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/users/update/{{userId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{penumpangUsername}}\",\n  \"password\": \"{{penumpangPassword}}\",\n  \"role\": \"PENUMPANG\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/users/delete/{{userId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pelanggan",
+      "item": [
+        {
+          "name": "ADMIN",
+          "item": [
+            {
+              "name": "Create Pelanggan",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/pelanggan",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"NIK\": \"3276010101010001\",\n  \"nama_penumpang\": \"Budi Santoso\",\n  \"alamat\": \"Jl. Merdeka No. 1, Bandung\",\n  \"telp\": \"081234567890\",\n  \"userId\": {{userId}}\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Request succeeded\", function () {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                      "});",
+                      "const data = pm.response.json();",
+                      "if (data && data.id !== undefined) pm.collectionVariables.set('pelangganId', String(data.id));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get All Pelanggan",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/pelanggan",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Pelanggan By ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/pelanggan/{{pelangganId}}",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Pelanggan",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/pelanggan/{{pelangganId}}",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"NIK\": \"3276010101010001\",\n  \"nama_penumpang\": \"Budi Santoso Update\",\n  \"alamat\": \"Jl. Merdeka No. 99, Bandung\",\n  \"telp\": \"081234567891\",\n  \"userId\": {{userId}}\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Delete Pelanggan",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/pelanggan/{{pelangganId}}",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "PENUMPANG",
+          "item": [
+            {
+              "name": "Create My Pelanggan Profile",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/pelanggan/me",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{penumpangToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"NIK\": \"3276010101010001\",\n  \"nama_penumpang\": \"Budi Santoso\",\n  \"alamat\": \"Jl. Merdeka No. 1, Bandung\",\n  \"telp\": \"081234567890\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Request succeeded\", function () {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                      "});",
+                      "const data = pm.response.json();",
+                      "if (data && data.id !== undefined) pm.collectionVariables.set('pelangganId', String(data.id));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get My Pelanggan Profile",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/pelanggan/me",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{penumpangToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update My Pelanggan Profile",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/pelanggan/me",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{penumpangToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"NIK\": \"3276010101010001\",\n  \"nama_penumpang\": \"Budi Santoso Update\",\n  \"alamat\": \"Jl. Merdeka No. 99, Bandung\",\n  \"telp\": \"081234567891\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Delete My Pelanggan Profile",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/pelanggan/me",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{penumpangToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Petugas (ADMIN)",
+      "item": [
+        {
+          "name": "Create Petugas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/petugas",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_petugas\": \"Siti Aminah\",\n  \"alamat\": \"Jl. Sudirman No. 10, Jakarta\",\n  \"telp\": \"081298765432\",\n  \"userId\": {{petugasUserId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Requires an existing user id intended for petugas/admin linkage."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Request succeeded\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set('petugasId', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Petugas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/petugas",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Petugas By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/petugas/{{petugasId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Petugas",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/petugas/{{petugasId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_petugas\": \"Siti Aminah Update\",\n  \"alamat\": \"Jl. Sudirman No. 20, Jakarta\",\n  \"telp\": \"081298765433\",\n  \"userId\": {{petugasUserId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Petugas",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/petugas/{{petugasId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kereta",
+      "item": [
+        {
+          "name": "Create Kereta (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/kereta",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_kereta\": \"Argo Bromo Anggrek\",\n  \"deskripsi\": \"Kereta eksekutif Surabaya - Jakarta\",\n  \"kelas\": \"EKSEKUTIF\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Request succeeded\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set('keretaId', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Kereta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/kereta"
+          }
+        },
+        {
+          "name": "Get Kereta By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/kereta/{{keretaId}}"
+          }
+        },
+        {
+          "name": "Update Kereta (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/kereta/{{keretaId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_kereta\": \"Argo Bromo Anggrek Update\",\n  \"deskripsi\": \"Kereta eksekutif Surabaya - Jakarta (updated)\",\n  \"kelas\": \"EKSEKUTIF\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Kereta (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/kereta/{{keretaId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gerbong",
+      "item": [
+        {
+          "name": "Create Gerbong (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/gerbong",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_gerbong\": \"Gerbong A\",\n  \"kuota\": 50,\n  \"keretaId\": {{keretaId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Request succeeded\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set('gerbongId', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Gerbong",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/gerbong"
+          }
+        },
+        {
+          "name": "Get Gerbong By ID (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/gerbong/{{gerbongId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Gerbong (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/gerbong/{{gerbongId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama_gerbong\": \"Gerbong A Update\",\n  \"kuota\": 48,\n  \"keretaId\": {{keretaId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Gerbong (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/gerbong/{{gerbongId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kursi",
+      "item": [
+        {
+          "name": "Create Kursi A1 (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/kursi",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"no_kursi\": \"A1\",\n  \"gerbongId\": {{gerbongId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Request succeeded\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set('kursiId', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Kursi A2 (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/kursi",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"no_kursi\": \"A2\",\n  \"gerbongId\": {{gerbongId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Request succeeded\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set('kursiId2', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Kursi",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/kursi"
+          }
+        },
+        {
+          "name": "Get Kursi By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/kursi/{{kursiId}}"
+          }
+        },
+        {
+          "name": "Update Kursi (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/kursi/{{kursiId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"no_kursi\": \"A10\",\n  \"gerbongId\": {{gerbongId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Kursi (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/kursi/{{kursiId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jadwal",
+      "item": [
+        {
+          "name": "Create Jadwal (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/jadwal",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asal_keberangkatan\": \"Bandung\",\n  \"tujuan_keberangkatan\": \"Surabaya\",\n  \"tanggal_berangkat\": \"2026-06-10T08:00:00.000Z\",\n  \"tanggal_kedatangan\": \"2026-06-10T16:00:00.000Z\",\n  \"harga\": 350000,\n  \"keretaId\": {{keretaId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Request succeeded\", function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "const data = pm.response.json();",
+                  "if (data && data.id !== undefined) pm.collectionVariables.set('jadwalId', String(data.id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Jadwal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/jadwal?asal=Bandung&tujuan=Surabaya&kelas=EKSEKUTIF&tanggal=2026-06-10"
+          }
+        },
+        {
+          "name": "Get Jadwal Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/jadwal/{{jadwalId}}"
+          }
+        },
+        {
+          "name": "Update Jadwal (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/jadwal/{{jadwalId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asal_keberangkatan\": \"Bandung\",\n  \"tujuan_keberangkatan\": \"Yogyakarta\",\n  \"tanggal_berangkat\": \"2026-06-10T09:00:00.000Z\",\n  \"tanggal_kedatangan\": \"2026-06-10T15:00:00.000Z\",\n  \"harga\": 325000,\n  \"keretaId\": {{keretaId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Delete Jadwal (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/jadwal/{{jadwalId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ticket",
+      "item": [
+        {
+          "name": "PENUMPANG",
+          "item": [
+            {
+              "name": "Create Ticket",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/ticket",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{penumpangToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"jadwalId\": {{jadwalId}},\n  \"penumpang\": [\n    {\n      \"NIK\": \"3276010101010001\",\n      \"nama_penumpang\": \"Budi Santoso\",\n      \"kursiId\": {{kursiId}}\n    },\n    {\n      \"NIK\": \"3276010101010002\",\n      \"nama_penumpang\": \"Siti Aminah\",\n      \"kursiId\": {{kursiId2}}\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Request succeeded\", function () {",
+                      "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                      "});",
+                      "const data = pm.response.json();",
+                      "if (data && data.id !== undefined) pm.collectionVariables.set('ticketId', String(data.id));"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Get My Tickets",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/ticket/mine?bulan=6&tahun=2026",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{penumpangToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get My Ticket By ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/ticket/mine/{{ticketId}}",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{penumpangToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get My Ticket Nota",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/ticket/mine/{{ticketId}}/nota",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{penumpangToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Delete My Ticket",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/ticket/mine/{{ticketId}}",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{penumpangToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "ADMIN",
+          "item": [
+            {
+              "name": "Get All Tickets",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/ticket?bulan=6&tahun=2026&pelangganId={{pelangganId}}",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Ticket By ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/ticket/{{ticketId}}",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Ticket Nota",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/ticket/{{ticketId}}/nota",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Ticket",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/ticket/{{ticketId}}",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"jadwalId\": {{jadwalId}}\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Delete Ticket",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/ticket/{{ticketId}}",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Monthly Revenue",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/ticket/rekap/pemasukan?bulan=6&tahun=2026",
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{adminToken}}",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider      = "prisma-client"
+  output        = "../generated/prisma"
+  compilerBuild = "small"
+  moduleFormat  = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  ADMIN
+  PENUMPANG
+}
+
+model Users {
+  id       Int    @id @default(autoincrement())
+  username String @unique @db.VarChar(100)
+  password String @db.VarChar(100)
+  role     Role   @default(PENUMPANG)
+
+  pelanggan Pelanggan[]
+  petugas   Petugas[]
+}
+
+model Pelanggan {
+  id             Int    @id @default(autoincrement())
+  NIK            String @unique @db.VarChar(100)
+  nama_penumpang String @db.VarChar(100)
+  alamat         String @db.Text
+  telp           String @db.VarChar(20)
+
+  userId Int
+  user   Users @relation(fields: [userId], references: [id])
+
+  pembelianTiket PembelianTiket[]
+}
+
+model Petugas {
+  id           Int    @id @default(autoincrement())
+  nama_petugas String @db.VarChar(100)
+  alamat       String @db.Text
+  telp         String @db.VarChar(20)
+
+  userId Int
+  user   Users @relation(fields: [userId], references: [id])
+}
+
+model Kereta {
+  id          Int    @id @default(autoincrement())
+  nama_kereta String @db.VarChar(100)
+  deskripsi   String @db.Text
+  kelas       String @db.VarChar(50)
+
+  jadwal  Jadwal[]
+  gerbong Gerbong[]
+}
+
+model Gerbong {
+  id           Int    @id @default(autoincrement())
+  nama_gerbong String @db.VarChar(100)
+  kuota        Int
+
+  keretaId Int
+  kereta   Kereta @relation(fields: [keretaId], references: [id])
+
+  kursi Kursi[]
+}
+
+model Kursi {
+  id       Int    @id @default(autoincrement())
+  no_kursi String @db.VarChar(20)
+
+  gerbongId Int
+  gerbong   Gerbong @relation(fields: [gerbongId], references: [id])
+
+  detailPembelian DetailPembelian[]
+}
+
+model Jadwal {
+  id                   Int      @id @default(autoincrement())
+  asal_keberangkatan   String   @db.VarChar(100)
+  tujuan_keberangkatan String   @db.VarChar(100)
+  tanggal_berangkat    DateTime
+  tanggal_kedatangan   DateTime
+  harga                Float
+
+  keretaId Int
+  kereta   Kereta @relation(fields: [keretaId], references: [id])
+
+  pembelianTiket PembelianTiket[]
+}
+
+model PembelianTiket {
+  id                Int      @id @default(autoincrement())
+  tanggal_pembelian DateTime @default(now())
+
+  pelangganId Int
+  pelanggan   Pelanggan @relation(fields: [pelangganId], references: [id])
+
+  jadwalId Int
+  jadwal   Jadwal @relation(fields: [jadwalId], references: [id])
+
+  detailPembelian DetailPembelian[]
+}
+
+model DetailPembelian {
+  id Int @id @default(autoincrement())
+
+  NIK            String @db.VarChar(100)
+  nama_penumpang String @db.VarChar(100)
+
+  pembelianTiketId Int
+  pembelianTiket   PembelianTiket @relation(fields: [pembelianTiketId], references: [id])
+
+  kursiId Int
+  kursi   Kursi @relation(fields: [kursiId], references: [id])
+}
