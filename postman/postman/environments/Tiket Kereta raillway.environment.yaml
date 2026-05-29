@@ -1,0 +1,38 @@
+name: Tiket Kereta raillway
+values:
+  - key: baseUrl
+    value: 'http://localhost:3000'
+  - key: penumpangUsername
+    value: penumpang_demo
+  - key: penumpangPassword
+    value: StrongPassword123!
+  - key: adminUsername
+    value: admin
+  - key: adminPassword
+    value: StrongPassword123!
+  - key: penumpangToken
+    value: ''
+  - key: adminToken
+    value: ''
+  - key: userId
+    value: '0'
+  - key: adminUserId
+    value: '0'
+  - key: petugasUserId
+    value: '0'
+  - key: pelangganId
+    value: '0'
+  - key: petugasId
+    value: '0'
+  - key: keretaId
+    value: '0'
+  - key: gerbongId
+    value: '0'
+  - key: kursiId
+    value: '0'
+  - key: kursiId2
+    value: '0'
+  - key: jadwalId
+    value: '0'
+  - key: ticketId
+    value: '0'
