@@ -115,7 +115,7 @@ export class AuthService {
       console.log(error);
 
       throw AppError.internal({
-        message: 'Gagal login',
+        message: 'Anda gagal login, silahkan coba lagi',
       });
     }
   }
