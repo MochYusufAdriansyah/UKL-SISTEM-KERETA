@@ -12,6 +12,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -122,3 +123,4 @@ model DetailPembelian {
   kursiId Int
   kursi   Kursi @relation(fields: [kursiId], references: [id])
 }
+
