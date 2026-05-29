@@ -1,4 +1,4 @@
-import type { Role } from 'generated/prisma/enums';
+import type { Role } from '@prisma/client';
 
 export type AuthUser = {
   id: number;

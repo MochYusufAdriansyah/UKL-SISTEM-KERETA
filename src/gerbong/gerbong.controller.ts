@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { Role as UserRole } from 'generated/prisma/enums';
+import { Role as UserRole } from '@prisma/client';
 import { GerbongService } from './gerbong.service';
 import { CreateGerbongDto } from './dto/create-gerbong.dto';
 import { UpdateGerbongDto } from './dto/update-gerbong.dto';

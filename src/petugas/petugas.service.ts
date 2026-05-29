@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreatePetugasDto } from './dto/create-petugas.dto';
 import { UpdatePetugasDto } from './dto/update-petugas.dto';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { prismaErrors } from 'src/utils/prisma-error.utils';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AppError } from 'src/utils/app-error.utils';

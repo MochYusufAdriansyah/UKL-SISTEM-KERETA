@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { prismaErrors } from 'src/utils/prisma-error.utils';
 import { AppError } from 'src/utils/app-error.utils';
 import { BcryptService } from 'src/bcrypt/bcrypt.service';

@@ -9,7 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { PUBLIC_KEY } from '../decorators/public.decorator';
 import { ROLE_KEY } from '../decorators/role.decorator';
 import type { Request } from 'express';
-import type { Role as UserRole } from 'generated/prisma/enums';
+import type { Role as UserRole } from '@prisma/client';
 import type { AuthUser } from '../types/auth-user.type';
 
 @Injectable()

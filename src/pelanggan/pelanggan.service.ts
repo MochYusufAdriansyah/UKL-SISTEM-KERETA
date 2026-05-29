@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreatePelangganDto } from './dto/create-pelanggan.dto';
 import { UpdatePelangganDto } from './dto/update-pelanggan.dto';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { prismaErrors } from 'src/utils/prisma-error.utils';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AppError } from 'src/utils/app-error.utils';

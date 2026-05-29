@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 
 export function prismaErrors(error: unknown): Promise<unknown> {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {

@@ -15,7 +15,7 @@ import { UpdateJadwalDto } from './dto/update-jadwal.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { Role } from 'src/auth/decorators/role.decorator';
-import { Role as UserRole } from 'generated/prisma/enums';
+import { Role as UserRole } from '@prisma/client';
 import {
   ApiBearerAuth,
   ApiBody,

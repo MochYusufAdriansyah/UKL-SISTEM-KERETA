@@ -7,7 +7,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { Role as UserRole } from 'generated/prisma/enums';
+import { Role as PrismaRole } from '@prisma/client';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from 'src/auth/decorators/role.decorator';
@@ -19,28 +19,31 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Role(UserRole.ADMIN)
+  @Role(PrismaRole.ADMIN)
   @Get('findall')
   async findAll() {
     return await this.usersService.findAll();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Role(UserRole.ADMIN)
+  @Role(PrismaRole.ADMIN)
   @Get('findone/:id')
   async findOne(@Param('id') id: string) {
     return await this.usersService.findOne(+id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Role(UserRole.ADMIN)
+  @Role(PrismaRole.ADMIN)
   @Patch('update/:id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     return await this.usersService.update(+id, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Role(UserRole.ADMIN)
+  @Role(PrismaRole.ADMIN)
   @Delete('delete/:id')
   async remove(@Param('id') id: string) {
     return await this.usersService.remove(+id);

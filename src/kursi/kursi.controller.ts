@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { Role as UserRole } from 'generated/prisma/enums';
+import { Role as UserRole } from '@prisma/client';
 import { KursiService } from './kursi.service';
 import { CreateKursiDto } from './dto/create-kursi.dto';
 import { UpdateKursiDto } from './dto/update-kursi.dto';

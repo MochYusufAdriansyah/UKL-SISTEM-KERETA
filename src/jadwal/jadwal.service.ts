@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreateJadwalDto } from './dto/create-jadwal.dto';
 import { UpdateJadwalDto } from './dto/update-jadwal.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { prismaErrors } from 'src/utils/prisma-error.utils';
 import { AppError } from 'src/utils/app-error.utils';
 

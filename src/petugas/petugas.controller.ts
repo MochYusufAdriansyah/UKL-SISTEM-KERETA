@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { Role as UserRole } from 'generated/prisma/enums';
+import { Role as UserRole } from '@prisma/client';
 import { PetugasService } from './petugas.service';
 import { CreatePetugasDto } from './dto/create-petugas.dto';
 import { UpdatePetugasDto } from './dto/update-petugas.dto';

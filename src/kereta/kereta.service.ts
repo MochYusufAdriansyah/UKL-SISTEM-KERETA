@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreateKeretaDto } from './dto/create-kereta.dto';
 import { UpdateKeretaDto } from './dto/update-kereta.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { prismaErrors } from 'src/utils/prisma-error.utils';
 import { AppError } from 'src/utils/app-error.utils';
 

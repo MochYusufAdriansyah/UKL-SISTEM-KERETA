@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { Role as UserRole } from 'generated/prisma/enums';
+import { Role as UserRole } from '@prisma/client';
 import { PelangganService } from './pelanggan.service';
 import { CreatePelangganDto } from './dto/create-pelanggan.dto';
 import { UpdatePelangganDto } from './dto/update-pelanggan.dto';

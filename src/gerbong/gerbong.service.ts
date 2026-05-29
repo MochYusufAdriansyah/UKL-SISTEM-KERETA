@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreateGerbongDto } from './dto/create-gerbong.dto';
 import { UpdateGerbongDto } from './dto/update-gerbong.dto';
 import { AppError } from 'src/utils/app-error.utils';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { prismaErrors } from 'src/utils/prisma-error.utils';
 import { PrismaService } from 'src/prisma/prisma.service';
 

@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateKursiDto } from './dto/create-kursi.dto';
 import { UpdateKursiDto } from './dto/update-kursi.dto';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { prismaErrors } from 'src/utils/prisma-error.utils';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AppError } from 'src/utils/app-error.utils';
