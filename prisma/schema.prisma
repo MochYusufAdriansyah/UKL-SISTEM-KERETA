@@ -120,3 +120,4 @@ model DetailPembelian {
   kursiId Int
   kursi   Kursi @relation(fields: [kursiId], references: [id])
 }
+
