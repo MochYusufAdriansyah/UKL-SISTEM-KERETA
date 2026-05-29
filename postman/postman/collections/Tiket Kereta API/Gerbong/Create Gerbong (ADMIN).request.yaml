@@ -1,0 +1,27 @@
+$kind: http-request
+url: "{{baseUrl}}/gerbong"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nama_gerbong": "Gerbong A",
+      "kuota": 50,
+      "keretaId": {{keretaId}}
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Request succeeded", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+      const data = pm.response.json();
+      if (data && data.id !== undefined) pm.collectionVariables.set('gerbongId', String(data.id));
+    language: text/javascript
+order: 1000

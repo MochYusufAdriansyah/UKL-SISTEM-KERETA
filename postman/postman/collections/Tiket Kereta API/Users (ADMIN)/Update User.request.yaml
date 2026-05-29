@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/users/update/{{userId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{penumpangUsername}}",
+      "password": "{{penumpangPassword}}",
+      "role": "PENUMPANG"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 3000

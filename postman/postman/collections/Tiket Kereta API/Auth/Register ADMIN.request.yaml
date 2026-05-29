@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{penumpangUsername}}",
+      "password": "{{penumpangPassword}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Request succeeded", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+      const data = pm.response.json();
+      if (data && data.id !== undefined) pm.collectionVariables.set('userId', String(data.id));
+    language: text/javascript
+order: 1528

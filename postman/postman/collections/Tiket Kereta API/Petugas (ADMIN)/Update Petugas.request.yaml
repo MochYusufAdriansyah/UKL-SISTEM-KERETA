@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{baseUrl}}/petugas/{{petugasId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nama_petugas": "Siti Aminah Update",
+      "alamat": "Jl. Sudirman No. 20, Jakarta",
+      "telp": "081298765433",
+      "userId": {{petugasUserId}}
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 4000

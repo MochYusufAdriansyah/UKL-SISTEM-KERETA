@@ -7,7 +7,6 @@ import { prismaErrors } from 'src/utils/prisma-error.utils';
 import { AppError } from 'src/utils/app-error.utils';
 import { BcryptService } from 'src/bcrypt/bcrypt.service';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from 'generated/prisma/enums';
 
 @Injectable()
 export class AuthService {
@@ -19,18 +18,25 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const hashed = await this.bcrypt.hashPassword(dto.password);
+
     try {
       const user = await this.prisma.users.create({
         data: {
           username: dto.username,
           password: hashed,
-          role: Role.PENUMPANG,
+          role: dto.role,
         },
-        select: { id: true, username: true, role: true },
+        select: {
+          id: true,
+          username: true,
+          role: true,
+        },
       });
 
       if (!user) {
-        throw AppError.badRequest({ message: 'Gagal membuat user' });
+        throw AppError.badRequest({
+          message: 'Gagal membuat user',
+        });
       }
 
       return user;
@@ -38,18 +44,25 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         throw await prismaErrors(error);
       }
+
       console.log(error);
-      throw AppError.internal({ message: 'Gagal membuat user' });
+
+      throw AppError.internal({
+        message: 'Gagal membuat user',
+      });
     }
   }
 
   async login(dto: LoginDto) {
     try {
       const user = await this.prisma.users.findUnique({
-        where: { username: dto.username },
+        where: {
+          username: dto.username,
+        },
       });
 
       if (!user) {
@@ -74,7 +87,13 @@ export class AuthService {
         username: user.username,
         role: user.role,
       } as const;
-      const token = await this.jwt.signAsync(payload);
+
+      const token = await this.jwt.signAsync(payload, {
+        secret:
+          process.env.JWT_SECRET ||
+          '325167923122ad5984c832dfa622f8651ffd7af6a1f3878ce430d1a6f3cfe248d3a598e0f74e16771a5b990cbe024a3e6e2aa0bb3e825a98ed00f957b4a1e56',
+        expiresIn: '1d',
+      });
 
       return {
         token,
@@ -88,11 +107,16 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         throw await prismaErrors(error);
       }
+
       console.log(error);
-      throw AppError.internal({ message: 'Gagal login' });
+
+      throw AppError.internal({
+        message: 'Gagal login',
+      });
     }
   }
 }

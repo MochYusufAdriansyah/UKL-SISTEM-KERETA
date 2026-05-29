@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/gerbong/{{gerbongId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nama_gerbong": "Gerbong A Update",
+      "kuota": 48,
+      "keretaId": {{keretaId}}
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 4000

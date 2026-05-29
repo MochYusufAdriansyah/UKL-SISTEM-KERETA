@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/jadwal/{{jadwalId}}"
+method: GET
+order: 3000

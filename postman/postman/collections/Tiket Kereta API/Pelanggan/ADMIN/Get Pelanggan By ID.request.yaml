@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{baseUrl}}/pelanggan/{{pelangganId}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 3000

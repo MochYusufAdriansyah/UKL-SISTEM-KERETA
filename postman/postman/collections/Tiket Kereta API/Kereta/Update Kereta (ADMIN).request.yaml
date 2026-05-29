@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{baseUrl}}/kereta/{{keretaId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nama_kereta": "Argo Bromo Anggrek Update",
+      "deskripsi": "Kereta eksekutif Surabaya - Jakarta (updated)",
+      "kelas": "EKSEKUTIF"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 4000

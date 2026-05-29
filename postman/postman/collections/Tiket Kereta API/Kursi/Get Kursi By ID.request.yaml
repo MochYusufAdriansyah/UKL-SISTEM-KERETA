@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/kursi/{{kursiId}}"
+method: GET
+order: 4000

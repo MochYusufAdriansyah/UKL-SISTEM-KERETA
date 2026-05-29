@@ -11,13 +11,29 @@ import { RolesGuard } from './guards/role.guard';
 @Module({
   imports: [
     PassportModule,
+
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: process.env.JWT_EXPIRED as StringValue },
+
+      // sementara hardcode dulu supaya pasti kebaca
+      secret:
+        process.env.JWT_SECRET ||
+        '325167923122ad5984c832dfa622f8651ffd7af6a1f3878ce430d1a6f3cfe248d3a598e0f74e16771a5b990cbe024a3e6e2aa0bb3e825a98ed00f957b4a1e56',
+
+      signOptions: {
+        expiresIn:
+          (process.env.JWT_EXPIRED as StringValue) || '1d',
+      },
     }),
   ],
+
   controllers: [AuthController],
-  providers: [AuthService, JwtService, JwtStrategy, RolesGuard],
+
+  providers: [
+    AuthService,
+    JwtService,
+    JwtStrategy,
+    RolesGuard,
+  ],
 })
 export class AuthModule {}

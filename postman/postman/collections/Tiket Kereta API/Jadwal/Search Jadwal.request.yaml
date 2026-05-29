@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseUrl}}/jadwal?asal=Bandung&tujuan=Surabaya&kelas=EKSEKUTIF&tanggal=2026-06-10"
+method: GET
+queryParams:
+  asal: Bandung
+  tujuan: Surabaya
+  kelas: EKSEKUTIF
+  tanggal: 2026-06-10
+order: 2000

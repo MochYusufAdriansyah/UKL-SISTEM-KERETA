@@ -1,0 +1,28 @@
+$kind: collection
+description: |-
+  Postman collection generated from the current NestJS codebase.
+
+  Important notes:
+  - `POST /auth/register` always creates a `PENUMPANG` user.
+  - Admin-only routes require a pre-existing admin user and a valid `adminToken`.
+  - `pelanggan` and `petugas` records depend on existing `Users` rows.
+  - Collection variables are populated automatically by the create/login requests where possible.
+variables:
+  baseUrl: http://localhost:3000
+  penumpangUsername: penumpang_demo
+  penumpangPassword: StrongPassword123!
+  adminUsername: admin
+  adminPassword: StrongPassword123!
+  penumpangToken: ""
+  adminToken: ""
+  userId: "0"
+  adminUserId: "0"
+  petugasUserId: "0"
+  pelangganId: "0"
+  petugasId: "0"
+  keretaId: "0"
+  gerbongId: "0"
+  kursiId: "0"
+  kursiId2: "0"
+  jadwalId: "0"
+  ticketId: "0"

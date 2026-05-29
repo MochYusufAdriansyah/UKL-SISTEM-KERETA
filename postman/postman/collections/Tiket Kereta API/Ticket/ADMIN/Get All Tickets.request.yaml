@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/ticket?bulan=6&tahun=2026&pelangganId={{pelangganId}}"
+method: GET
+queryParams:
+  bulan: "6"
+  tahun: "2026"
+  pelangganId: "{{pelangganId}}"
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 1000

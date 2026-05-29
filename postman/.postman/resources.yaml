@@ -1,0 +1,15 @@
+# Use this workspace to collaborate
+workspace:
+  id: 6bd01d71-da95-4b7a-8f02-1dce31d6cd88
+
+localResources:
+  collections:
+    - ..\tiket-kereta.postman_collection.json
+  environments:
+    - ..\tiket-kereta.local.postman_environment.json
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ..\postman\collections\Tiket Kereta API: 53d2f0c7-1440-47f2-8ad4-e448b794a6f8

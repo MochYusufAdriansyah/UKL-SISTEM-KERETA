@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/pelanggan/me"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "NIK": "3276010101010001",
+      "nama_penumpang": "Budi Santoso",
+      "alamat": "Jl. Merdeka No. 1, Bandung",
+      "telp": "081234567890"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{penumpangToken}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Request succeeded", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+      const data = pm.response.json();
+      if (data && data.id !== undefined) pm.collectionVariables.set('pelangganId', String(data.id));
+    language: text/javascript
+order: 1000

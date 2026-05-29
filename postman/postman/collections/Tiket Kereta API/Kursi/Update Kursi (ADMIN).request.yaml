@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{baseUrl}}/kursi/{{kursiId}}"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "no_kursi": "A10",
+      "gerbongId": {{gerbongId}}
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+order: 5000

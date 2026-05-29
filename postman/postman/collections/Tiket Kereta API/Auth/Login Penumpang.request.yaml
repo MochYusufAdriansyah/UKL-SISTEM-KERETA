@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{penumpangUsername}}",
+      "password": "{{penumpangPassword}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Login succeeded", function () {
+        pm.response.to.have.status(200);
+      });
+      const data = pm.response.json();
+      if (data && data.token) pm.collectionVariables.set('penumpangToken', data.token);
+      if (data && data.user && data.user.id !== undefined) pm.collectionVariables.set('userId', String(data.user.id));
+    language: text/javascript
+order: 3000

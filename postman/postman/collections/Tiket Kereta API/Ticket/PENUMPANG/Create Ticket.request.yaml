@@ -1,0 +1,37 @@
+$kind: http-request
+url: "{{baseUrl}}/ticket"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "jadwalId": {{jadwalId}},
+      "penumpang": [
+        {
+          "NIK": "3276010101010001",
+          "nama_penumpang": "Budi Santoso",
+          "kursiId": {{kursiId}}
+        },
+        {
+          "NIK": "3276010101010002",
+          "nama_penumpang": "Siti Aminah",
+          "kursiId": {{kursiId2}}
+        }
+      ]
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{penumpangToken}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Request succeeded", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+      const data = pm.response.json();
+      if (data && data.id !== undefined) pm.collectionVariables.set('ticketId', String(data.id));
+    language: text/javascript
+order: 1000

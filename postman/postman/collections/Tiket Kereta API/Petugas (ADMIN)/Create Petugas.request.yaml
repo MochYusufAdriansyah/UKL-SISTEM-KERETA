@@ -1,0 +1,29 @@
+$kind: http-request
+description: Requires an existing user id intended for petugas/admin linkage.
+url: "{{baseUrl}}/petugas"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nama_petugas": "Siti Aminah",
+      "alamat": "Jl. Sudirman No. 10, Jakarta",
+      "telp": "081298765432",
+      "userId": {{petugasUserId}}
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{adminToken}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Request succeeded", function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+      const data = pm.response.json();
+      if (data && data.id !== undefined) pm.collectionVariables.set('petugasId', String(data.id));
+    language: text/javascript
+order: 1000

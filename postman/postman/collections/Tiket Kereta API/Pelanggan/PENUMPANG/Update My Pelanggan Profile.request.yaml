@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{baseUrl}}/pelanggan/me"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "NIK": "3276010101010001",
+      "nama_penumpang": "Budi Santoso Update",
+      "alamat": "Jl. Merdeka No. 99, Bandung",
+      "telp": "081234567891"
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{penumpangToken}}"
+order: 3000
