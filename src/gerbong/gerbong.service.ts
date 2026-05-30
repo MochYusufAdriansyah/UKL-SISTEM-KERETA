@@ -34,6 +34,77 @@ export class GerbongService {
     }
   }
 
+  async generateKursi(id: number) {
+  try {
+    const gerbong = await this.prisma.gerbong.findUnique({
+      where: { id },
+    });
+
+    if (!gerbong) {
+      throw AppError.notFound('Gerbong', {
+        message: 'Gerbong tidak ditemukan',
+      });
+    }
+
+    const existingSeats =
+      await this.prisma.kursi.count({
+        where: {
+          gerbongId: id,
+        },
+      });
+
+    if (existingSeats > 0) {
+      throw AppError.badRequest({
+        message:
+          'Kursi untuk gerbong ini sudah dibuat',
+      });
+    }
+
+    const prefix =
+      gerbong.nama_gerbong
+        .replace('Gerbong', '')
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+
+    const kursi = [];
+
+    for (
+      let i = 1;
+      i <= gerbong.kuota;
+      i++
+    ) {
+      kursi.push({
+        no_kursi: `${prefix}${i}`,
+        gerbongId: gerbong.id,
+      });
+    }
+
+    await this.prisma.kursi.createMany({
+      data: kursi,
+    });
+
+    return {
+      message:
+        'Kursi berhasil dibuat',
+      total: kursi.length,
+    };
+  } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    }
+
+    if (
+      error instanceof
+      Prisma.PrismaClientKnownRequestError
+    ) {
+      throw await prismaErrors(error);
+    }
+
+    console.log(error);
+  }
+}
+
   async findAll() {
     try {
       const gerbong = await this.prisma.gerbong.findMany();

@@ -27,6 +27,15 @@ export class GerbongController {
     return this.gerbongService.create(createGerbongDto);
   }
 
+  @Post(':id/generate-seat')
+generateSeat(
+  @Param('id') id: string,
+) {
+  return this.gerbongService.generateKursi(
+    +id,
+  );
+}
+
   @Get()
   findAll() {
     return this.gerbongService.findAll();

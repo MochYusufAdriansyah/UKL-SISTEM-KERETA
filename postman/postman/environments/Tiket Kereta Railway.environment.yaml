@@ -1,7 +1,7 @@
-name: Tiket Kereta raillway
+name: Tiket Kereta Railway
 values:
   - key: baseUrl
-    value: 'http://localhost:3000'
+    value: 'https://ukl-sistem-kereta-production.up.railway.app/api'
   - key: penumpangUsername
     value: penumpang_demo
   - key: penumpangPassword
