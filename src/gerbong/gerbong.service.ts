@@ -1,104 +1,239 @@
 import { HttpException, Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+
+import { PrismaService } from 'src/prisma/prisma.service';
+
 import { CreateGerbongDto } from './dto/create-gerbong.dto';
 import { UpdateGerbongDto } from './dto/update-gerbong.dto';
+
 import { AppError } from 'src/utils/app-error.utils';
-import { Prisma } from '@prisma/client';
 import { prismaErrors } from 'src/utils/prisma-error.utils';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class GerbongService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async create(createGerbongDto: CreateGerbongDto) {
+  async create(
+    createGerbongDto: CreateGerbongDto,
+  ) {
     try {
       return await this.prisma.gerbong.create({
         data: createGerbongDto,
       });
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      if (
+        error instanceof
+        Prisma.PrismaClientKnownRequestError
+      ) {
         throw await prismaErrors(error);
       }
+
       console.error(error);
-      throw AppError.badRequest({ message: 'Gagal menambahkan data gerbong' });
+
+      throw AppError.badRequest({
+        message:
+          'Gagal menambahkan data gerbong',
+      });
     }
   }
 
   async generateKursi(id: number) {
     try {
-      const gerbong = await this.prisma.gerbong.findUnique({ where: { id } });
+      const gerbong =
+        await this.prisma.gerbong.findUnique({
+          where: { id },
+        });
+
       if (!gerbong) {
-        throw AppError.notFound('Gerbong', { message: 'Gerbong tidak ditemukan' });
+        throw AppError.notFound(
+          'Gerbong',
+          {
+            message:
+              'Gerbong tidak ditemukan',
+          },
+        );
       }
 
-      const existingSeats = await this.prisma.kursi.count({ where: { gerbongId: id } });
+      const existingSeats =
+        await this.prisma.kursi.count({
+          where: {
+            gerbongId: id,
+          },
+        });
+
       if (existingSeats > 0) {
-        throw AppError.badRequest({ message: 'Kursi untuk gerbong ini sudah dibuat' });
+        throw AppError.badRequest({
+          message:
+            'Kursi untuk gerbong ini sudah dibuat',
+        });
       }
 
-      const prefix = gerbong.nama_gerbong.replace('Gerbong', '').trim().charAt(0).toUpperCase();
-      const kursi = Array.from({ length: gerbong.kuota }, (_, i) => ({
-        no_kursi: `${prefix}${i + 1}`,
-        gerbongId: gerbong.id,
-      }));
+      const prefix =
+        gerbong.nama_gerbong
+          .replace('Gerbong', '')
+          .trim()
+          .charAt(0)
+          .toUpperCase();
 
-      await this.prisma.kursi.createMany({ data: kursi });
+      const kursi = Array.from(
+        {
+          length: gerbong.kuota,
+        },
+        (_, i) => ({
+          no_kursi: `${prefix}${i + 1}`,
+          gerbongId: gerbong.id,
+        }),
+      );
 
-      return { message: 'Kursi berhasil dibuat', total: kursi.length };
+      await this.prisma.kursi.createMany({
+        data: kursi,
+      });
+
+      return {
+        message:
+          'Kursi berhasil dibuat',
+        total: kursi.length,
+      };
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      if (
+        error instanceof
+        Prisma.PrismaClientKnownRequestError
+      ) {
         throw await prismaErrors(error);
       }
+
       console.error(error);
-      throw AppError.badRequest({ message: 'Gagal membuat kursi' });
+
+      throw AppError.badRequest({
+        message:
+          'Gagal membuat kursi',
+      });
     }
   }
 
   async findAll() {
     try {
-      return await this.prisma.gerbong.findMany();
+      const gerbong =
+        await this.prisma.gerbong.findMany({
+          include: {
+            kereta: true,
+            kursi: true,
+          },
+          orderBy: {
+            id: 'asc',
+          },
+        });
+
+      return gerbong.map((item) => ({
+        ...item,
+        total_kursi:
+          item.kursi.length,
+      }));
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      if (
+        error instanceof
+        Prisma.PrismaClientKnownRequestError
+      ) {
         throw await prismaErrors(error);
       }
+
       console.error(error);
-      throw AppError.badRequest({ message: 'Gagal mengambil semua data gerbong' });
+
+      throw AppError.badRequest({
+        message:
+          'Gagal mengambil data gerbong',
+      });
     }
   }
 
   async findOne(id: number) {
     try {
-      const gerbong = await this.prisma.gerbong.findUnique({ where: { id } });
+      const gerbong =
+        await this.prisma.gerbong.findUnique({
+          where: { id },
+          include: {
+            kereta: true,
+            kursi: true,
+          },
+        });
+
       if (!gerbong) {
-        throw AppError.notFound('Gerbong', { message: 'Gagal mengambil data gerbong' });
+        throw AppError.notFound(
+          'Gerbong',
+          {
+            message:
+              'Gerbong tidak ditemukan',
+          },
+        );
       }
-      return gerbong;
+
+      return {
+        ...gerbong,
+        total_kursi:
+          gerbong.kursi.length,
+      };
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      if (
+        error instanceof
+        Prisma.PrismaClientKnownRequestError
+      ) {
         throw await prismaErrors(error);
       }
+
       console.error(error);
-      throw AppError.badRequest({ message: 'Error mengambil data gerbong' });
+
+      throw AppError.badRequest({
+        message:
+          'Gagal mengambil data gerbong',
+      });
     }
   }
 
-  async update(id: number, updateGerbongDto: UpdateGerbongDto) {
+  async update(
+    id: number,
+    updateGerbongDto: UpdateGerbongDto,
+  ) {
     try {
       return await this.prisma.gerbong.update({
         where: { id },
         data: updateGerbongDto,
       });
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      if (
+        error instanceof
+        Prisma.PrismaClientKnownRequestError
+      ) {
         throw await prismaErrors(error);
       }
+
       console.error(error);
-      throw AppError.badRequest({ message: 'Gagal mengupdate data gerbong' });
+
+      throw AppError.badRequest({
+        message:
+          'Gagal mengupdate data gerbong',
+      });
     }
   }
 
@@ -107,10 +242,38 @@ export class GerbongService {
       const gerbong =
         await this.prisma.gerbong.findUnique({
           where: { id },
+          include: {
+            kursi: {
+              include: {
+                detailPembelian: true,
+              },
+            },
+          },
         });
 
       if (!gerbong) {
-        throw AppError.notFound('Gerbong');
+        throw AppError.notFound(
+          'Gerbong',
+          {
+            message:
+              'Gerbong tidak ditemukan',
+          },
+        );
+      }
+
+      const sudahDipakai =
+        gerbong.kursi.some(
+          (kursi) =>
+            kursi
+              .detailPembelian
+              .length > 0,
+        );
+
+      if (sudahDipakai) {
+        throw AppError.badRequest({
+          message:
+            'Gerbong tidak dapat dihapus karena sudah digunakan dalam transaksi tiket',
+        });
       }
 
       await this.prisma.$transaction([
@@ -121,15 +284,13 @@ export class GerbongService {
         }),
 
         this.prisma.gerbong.delete({
-          where: {
-            id,
-          },
+          where: { id },
         }),
       ]);
 
       return {
         message:
-          'Gerbong dan seluruh kursinya berhasil dihapus',
+          'Gerbong berhasil dihapus',
       };
     } catch (error) {
       if (error instanceof HttpException) {
