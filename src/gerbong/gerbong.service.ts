@@ -8,7 +8,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class GerbongService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(createGerbongDto: CreateGerbongDto) {
     try {
@@ -104,14 +104,51 @@ export class GerbongService {
 
   async remove(id: number) {
     try {
-      return await this.prisma.gerbong.delete({ where: { id } });
+      const gerbong =
+        await this.prisma.gerbong.findUnique({
+          where: { id },
+        });
+
+      if (!gerbong) {
+        throw AppError.notFound('Gerbong');
+      }
+
+      await this.prisma.$transaction([
+        this.prisma.kursi.deleteMany({
+          where: {
+            gerbongId: id,
+          },
+        }),
+
+        this.prisma.gerbong.delete({
+          where: {
+            id,
+          },
+        }),
+      ]);
+
+      return {
+        message:
+          'Gerbong dan seluruh kursinya berhasil dihapus',
+      };
     } catch (error) {
-      if (error instanceof HttpException) throw error;
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      if (
+        error instanceof
+        Prisma.PrismaClientKnownRequestError
+      ) {
         throw await prismaErrors(error);
       }
+
       console.error(error);
-      throw AppError.notFound('Gerbong', { message: 'Gerbong tidak ditemukan' });
+
+      throw AppError.badRequest({
+        message:
+          'Gagal menghapus gerbong',
+      });
     }
   }
 }
