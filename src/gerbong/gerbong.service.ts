@@ -19,9 +19,60 @@ export class GerbongService {
     createGerbongDto: CreateGerbongDto,
   ) {
     try {
-      return await this.prisma.gerbong.create({
-        data: createGerbongDto,
+      const gerbong =
+        await this.prisma.gerbong.create({
+          data: createGerbongDto,
+        });
+
+      const letters = [
+        'A',
+        'B',
+        'C',
+        'D',
+      ];
+
+      const kursi: {
+        no_kursi: string;
+        gerbongId: number;
+      }[] = [];
+
+      let totalSeat = 0;
+
+      const rows = Math.ceil(
+        gerbong.kuota / 4,
+      );
+
+      for (
+        let row = 1;
+        row <= rows;
+        row++
+      ) {
+        for (const letter of letters) {
+          if (
+            totalSeat >=
+            gerbong.kuota
+          ) {
+            break;
+          }
+
+          kursi.push({
+            no_kursi: `${row}${letter}`,
+            gerbongId: gerbong.id,
+          });
+
+          totalSeat++;
+        }
+      }
+
+      await this.prisma.kursi.createMany({
+        data: kursi,
       });
+
+      return {
+        ...gerbong,
+        total_kursi:
+          kursi.length,
+      };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -42,112 +93,6 @@ export class GerbongService {
       });
     }
   }
-
-  async generateKursi(id: number) {
-  try {
-    const gerbong =
-      await this.prisma.gerbong.findUnique({
-        where: { id },
-      })
-
-    if (!gerbong) {
-      throw AppError.notFound(
-        'Gerbong',
-        {
-          message:
-            'Gerbong tidak ditemukan',
-        },
-      )
-    }
-
-    const existingSeats =
-      await this.prisma.kursi.count({
-        where: {
-          gerbongId: id,
-        },
-      })
-
-    if (existingSeats > 0) {
-      throw AppError.badRequest({
-        message:
-          'Kursi untuk gerbong ini sudah dibuat',
-      })
-    }
-
-    const letters = [
-      'A',
-      'B',
-      'C',
-      'D',
-    ]
-
-    const kursi: {
-      no_kursi: string
-      gerbongId: number
-    }[] = []
-
-    let totalSeat = 0
-
-    const rows = Math.ceil(
-      gerbong.kuota / 4,
-    )
-
-    for (
-      let row = 1;
-      row <= rows;
-      row++
-    ) {
-      for (const letter of letters) {
-        if (
-          totalSeat >=
-          gerbong.kuota
-        ) {
-          break
-        }
-
-        kursi.push({
-          no_kursi: `${row}${letter}`,
-          gerbongId: gerbong.id,
-        })
-
-        totalSeat++
-      }
-    }
-
-    await this.prisma.kursi.createMany({
-      data: kursi,
-    })
-
-    return {
-      success: true,
-      message:
-        'Kursi berhasil dibuat',
-      total_kursi:
-        kursi.length,
-      data: kursi,
-    }
-  } catch (error) {
-    if (
-      error instanceof HttpException
-    ) {
-      throw error
-    }
-
-    if (
-      error instanceof
-      Prisma.PrismaClientKnownRequestError
-    ) {
-      throw await prismaErrors(error)
-    }
-
-    console.error(error)
-
-    throw AppError.badRequest({
-      message:
-        'Gagal membuat kursi',
-    })
-  }
-}
 
   async findAll() {
     try {
@@ -240,6 +185,21 @@ export class GerbongService {
     updateGerbongDto: UpdateGerbongDto,
   ) {
     try {
+      const gerbong =
+        await this.prisma.gerbong.findUnique({
+          where: { id },
+        });
+
+      if (!gerbong) {
+        throw AppError.notFound(
+          'Gerbong',
+          {
+            message:
+              'Gerbong tidak ditemukan',
+          },
+        );
+      }
+
       return await this.prisma.gerbong.update({
         where: { id },
         data: updateGerbongDto,
@@ -292,8 +252,7 @@ export class GerbongService {
       const sudahDipakai =
         gerbong.kursi.some(
           (kursi) =>
-            kursi
-              .detailPembelian
+            kursi.detailPembelian
               .length > 0,
         );
 
@@ -312,11 +271,14 @@ export class GerbongService {
         }),
 
         this.prisma.gerbong.delete({
-          where: { id },
+          where: {
+            id,
+          },
         }),
       ]);
 
       return {
+        success: true,
         message:
           'Gerbong berhasil dihapus',
       };
