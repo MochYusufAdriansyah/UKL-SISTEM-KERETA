@@ -197,9 +197,7 @@ export class JadwalService {
             include: {
               gerbong: {
                 include: {
-                  kursi: {
-                    orderBy: { no_kursi: 'asc' },
-                  },
+                  kursi: true,
                 },
                 orderBy: { nama_gerbong: 'asc' },
               },
