@@ -9,11 +9,13 @@ async function bootstrap() {
   // Prefix semua route => /api
   app.setGlobalPrefix('api');
 
-  // CORS
   app.enableCors({
-    origin: process.env.FRONTEND_URL || true,
+    origin: [
+      'http://localhost:3000',
+      'https://railtrack-beige.vercel.app',
+    ],
     credentials: true,
-  });
+  })
 
   // Validation DTO
   app.useGlobalPipes(
