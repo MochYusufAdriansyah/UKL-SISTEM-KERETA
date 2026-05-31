@@ -30,34 +30,78 @@ export class JadwalService {
   }
 
   async create(createJadwalDto: CreateJadwalDto) {
-    try {
-      const jadwal = await this.prisma.jadwal.create({
-        data: {
-          ...createJadwalDto,
-          tanggal_berangkat: new Date(createJadwalDto.tanggal_berangkat),
-          tanggal_kedatangan: new Date(createJadwalDto.tanggal_kedatangan),
-        },
-        include: {
-          kereta: true,
-        },
-      });
+  try {
+    const data: any[] = []
 
-      if (!jadwal) {
-        throw AppError.badRequest({ message: 'Gagal membuat jadwal' });
-      }
+    for (let i = 0; i < 365; i++) {
+      const tanggalBerangkat =
+        new Date(
+          createJadwalDto.tanggal_berangkat,
+        )
 
-      return jadwal;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        throw await prismaErrors(error);
-      }
-      console.log(error);
-      throw AppError.internal({ message: 'Gagal membuat jadwal' });
+      const tanggalKedatangan =
+        new Date(
+          createJadwalDto.tanggal_kedatangan,
+        )
+
+      tanggalBerangkat.setDate(
+        tanggalBerangkat.getDate() + i,
+      )
+
+      tanggalKedatangan.setDate(
+        tanggalKedatangan.getDate() + i,
+      )
+
+      data.push({
+        asal_keberangkatan:
+          createJadwalDto.asal_keberangkatan,
+
+        tujuan_keberangkatan:
+          createJadwalDto.tujuan_keberangkatan,
+
+        tanggal_berangkat:
+          tanggalBerangkat,
+
+        tanggal_kedatangan:
+          tanggalKedatangan,
+
+        harga:
+          createJadwalDto.harga,
+
+        keretaId:
+          createJadwalDto.keretaId,
+      })
     }
+
+    await this.prisma.jadwal.createMany({
+      data,
+    })
+
+    return {
+      message:
+        '365 jadwal berhasil dibuat',
+      total: data.length,
+    }
+  } catch (error) {
+    if (error instanceof HttpException) {
+      throw error
+    }
+
+    if (
+      error instanceof
+      Prisma.PrismaClientKnownRequestError
+    ) {
+      throw await prismaErrors(error)
+    }
+
+    console.log(error)
+
+    throw AppError.internal({
+      message:
+        'Gagal membuat jadwal',
+    })
   }
+}
 
   async findAll(filters?: {
     asal?: string;
