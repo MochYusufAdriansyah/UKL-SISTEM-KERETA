@@ -8,7 +8,7 @@ import { AppError } from 'src/utils/app-error.utils';
 
 @Injectable()
 export class PelangganService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   private getPelangganInclude() {
     return {
@@ -97,6 +97,80 @@ export class PelangganService {
       }
       console.log(error);
       throw AppError.internal({ message: 'Gagal membuat pelanggan' });
+    }
+  }
+
+  async profile(userId: number) {
+    try {
+      const pelanggan =
+        await this.prisma.pelanggan.findFirst({
+          where: {
+            userId,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                role: true,
+              },
+            },
+
+            pembelianTiket: {
+              include: {
+                jadwal: {
+                  include: {
+                    kereta: true,
+                  },
+                },
+
+                detailPembelian: {
+                  include: {
+                    kursi: {
+                      include: {
+                        gerbong: true,
+                      },
+                    },
+                  },
+                },
+              },
+
+              orderBy: {
+                tanggal_pembelian: 'desc',
+              },
+            },
+          },
+        });
+
+      if (!pelanggan) {
+        throw AppError.notFound(
+          'Pelanggan',
+          {
+            message:
+              'Data pelanggan tidak ditemukan',
+          },
+        );
+      }
+
+      return pelanggan;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      if (
+        error instanceof
+        Prisma.PrismaClientKnownRequestError
+      ) {
+        throw await prismaErrors(error);
+      }
+
+      console.log(error);
+
+      throw AppError.internal({
+        message:
+          'Gagal mengambil profile pelanggan',
+      });
     }
   }
 
