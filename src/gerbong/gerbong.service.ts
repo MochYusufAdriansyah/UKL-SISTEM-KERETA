@@ -44,82 +44,110 @@ export class GerbongService {
   }
 
   async generateKursi(id: number) {
-    try {
-      const gerbong =
-        await this.prisma.gerbong.findUnique({
-          where: { id },
-        });
+  try {
+    const gerbong =
+      await this.prisma.gerbong.findUnique({
+        where: { id },
+      })
 
-      if (!gerbong) {
-        throw AppError.notFound(
-          'Gerbong',
-          {
-            message:
-              'Gerbong tidak ditemukan',
-          },
-        );
-      }
-
-      const existingSeats =
-        await this.prisma.kursi.count({
-          where: {
-            gerbongId: id,
-          },
-        });
-
-      if (existingSeats > 0) {
-        throw AppError.badRequest({
-          message:
-            'Kursi untuk gerbong ini sudah dibuat',
-        });
-      }
-
-      const prefix =
-        gerbong.nama_gerbong
-          .replace('Gerbong', '')
-          .trim()
-          .charAt(0)
-          .toUpperCase();
-
-      const kursi = Array.from(
+    if (!gerbong) {
+      throw AppError.notFound(
+        'Gerbong',
         {
-          length: gerbong.kuota,
+          message:
+            'Gerbong tidak ditemukan',
         },
-        (_, i) => ({
-          no_kursi: `${prefix}${i + 1}`,
-          gerbongId: gerbong.id,
-        }),
-      );
+      )
+    }
 
-      await this.prisma.kursi.createMany({
-        data: kursi,
-      });
+    const existingSeats =
+      await this.prisma.kursi.count({
+        where: {
+          gerbongId: id,
+        },
+      })
 
-      return {
-        message:
-          'Kursi berhasil dibuat',
-        total: kursi.length,
-      };
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      if (
-        error instanceof
-        Prisma.PrismaClientKnownRequestError
-      ) {
-        throw await prismaErrors(error);
-      }
-
-      console.error(error);
-
+    if (existingSeats > 0) {
       throw AppError.badRequest({
         message:
-          'Gagal membuat kursi',
-      });
+          'Kursi untuk gerbong ini sudah dibuat',
+      })
     }
+
+    const letters = [
+      'A',
+      'B',
+      'C',
+      'D',
+    ]
+
+    const kursi: {
+      no_kursi: string
+      gerbongId: number
+    }[] = []
+
+    let totalSeat = 0
+
+    const rows = Math.ceil(
+      gerbong.kuota / 4,
+    )
+
+    for (
+      let row = 1;
+      row <= rows;
+      row++
+    ) {
+      for (const letter of letters) {
+        if (
+          totalSeat >=
+          gerbong.kuota
+        ) {
+          break
+        }
+
+        kursi.push({
+          no_kursi: `${row}${letter}`,
+          gerbongId: gerbong.id,
+        })
+
+        totalSeat++
+      }
+    }
+
+    await this.prisma.kursi.createMany({
+      data: kursi,
+    })
+
+    return {
+      success: true,
+      message:
+        'Kursi berhasil dibuat',
+      total_kursi:
+        kursi.length,
+      data: kursi,
+    }
+  } catch (error) {
+    if (
+      error instanceof HttpException
+    ) {
+      throw error
+    }
+
+    if (
+      error instanceof
+      Prisma.PrismaClientKnownRequestError
+    ) {
+      throw await prismaErrors(error)
+    }
+
+    console.error(error)
+
+    throw AppError.badRequest({
+      message:
+        'Gagal membuat kursi',
+    })
   }
+}
 
   async findAll() {
     try {
