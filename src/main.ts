@@ -12,7 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-      'https://railtrack-beige.vercel.app',
+      'https://railtrack-ukl.vercel.app',
     ],
     credentials: true,
   })
